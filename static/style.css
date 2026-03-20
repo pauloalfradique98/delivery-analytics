@@ -35,6 +35,28 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.kpi {
+    text-align: center;
+    padding: 20px;
+}
+
+.kpi h3 {
+    font-size: 14px;
+    color: #666;
+}
+
+.kpi p {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
 /* INPUTS */
 input, select, button {
     width: 100%;
@@ -51,4 +73,8 @@ button {
 
 button:hover {
     background-color: #1b5fbd;
+}
+
+canvas {
+    max-height: 300px;
 }

@@ -26,29 +26,18 @@
     </form>
 </div>
 
-<!-- HORÁRIOS -->
-<div class="card">
-    <h2>📅 Entregas por Horário</h2>
-    <ul>
-        {% for hora, qtd in horarios.items() %}
-            <li>{{ hora }}h → {{ qtd }} entregas</li>
-        {% endfor %}
-    </ul>
-</div>
+<div class="grid">
 
-<!-- RANKING -->
-<div class="card">
-    <h2>🏆 Ranking de Bairros</h2>
-    <ol>
-        {% for bairro, dados in ranking_ordenado %}
-            <li>
-                <strong>{{ bairro }}</strong><br>
-                📦 {{ dados.quantidade }} entregas<br>
-                💰 Produtos: R$ {{ dados.total_produto }}<br>
-                🚚 Total: R$ {{ dados.total_geral }}
-            </li>
-        {% endfor %}
-    </ol>
+    <div class="card">
+        <h2>📊 Entregas por Horário</h2>
+        <canvas id="graficoHorarios"></canvas>
+    </div>
+
+    <div class="card">
+        <h2>🏆 Entregas por Bairro</h2>
+        <canvas id="graficoBairros"></canvas>
+    </div>
+
 </div>
 
 <!-- LISTA -->
@@ -62,5 +51,16 @@
         {% endfor %}
     </ul>
 </div>
+
+<!-- DADOS VINDOS DO FLASK -->
+<script>
+    var horasLabels = {{ horas_labels | tojson | safe }};
+    var horasValores = {{ horas_valores | tojson | safe }};
+    var bairrosLabels = {{ bairros_labels | tojson | safe }};
+    var bairrosValores = {{ bairros_valores | tojson | safe }};
+</script>
+
+<!-- SEU JS -->
+<script src="/static/js/dashboard.js"></script>
 
 {% endblock %}

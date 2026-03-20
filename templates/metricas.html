@@ -4,11 +4,58 @@
 
 <h1>📊 Métricas Gerais</h1>
 
-<div class="card">
-    <p>💰 Produtos: R$ {{ total_produtos }}</p>
-    <p>🚚 Taxas: R$ {{ total_taxas }}</p>
-    <p>🧾 Total: R$ {{ total_geral }}</p>
-    <p>📊 Ticket Médio: R$ {{ "%.2f"|format(ticket_medio) }}</p>
+<form method="GET" class="card">
+    <label>Filtrar período:</label>
+
+    <select name="periodo">
+        <option value="hoje" {% if periodo == 'hoje' %}selected{% endif %}>Hoje</option>
+        <option value="7dias" {% if periodo == '7dias' %}selected{% endif %}>Últimos 7 dias</option>
+        <option value="30dias" {% if periodo == '30dias' %}selected{% endif %}>Últimos 30 dias</option>
+    </select>
+
+    <button type="submit">Filtrar</button>
+</form>
+
+<div class="grid">
+
+    <div class="card kpi">
+        <h3>💰 Produtos</h3>
+        <p>R$ {{ total_produtos }}</p>
+    </div>
+
+    <div class="card kpi">
+        <h3>🚚 Taxas</h3>
+        <p>R$ {{ total_taxas }}</p>
+    </div>
+
+    <div class="card kpi">
+        <h3>🧾 Total</h3>
+        <p>R$ {{ total_geral }}</p>
+    </div>
+
+    <div class="card kpi">
+        <h3>📊 Ticket Médio</h3>
+        <p>R$ {{ "%.2f"|format(ticket_medio) }}</p>
+    </div>
+
 </div>
+
+<div class="card">
+    <h2>📈 Entregas por Dia</h2>
+    <canvas id="graficoDia"></canvas>
+</div>
+
+<!-- DADOS DO FLASK -->
+<script>
+    var labelsDia = {{ labels_dia | tojson | safe }};
+    var valoresDia = {{ valores_dia | tojson | safe }};
+
+    // proteção contra erro
+    if (!labelsDia) labelsDia = [];
+    if (!valoresDia) valoresDia = [];
+</script>
+
+<!-- SCRIPT -->
+<script src="/static/js/metricas.js"></script>
 
 {% endblock %}

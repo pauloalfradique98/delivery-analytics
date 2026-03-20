@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 from flask import Flask, render_template, request, redirect
 import sqlite3
 
@@ -71,6 +71,14 @@ def index():
         key=lambda x: x[1]['total_geral'],
         reverse=True
     )
+
+    # HORÁRIOS
+    horas_labels = list(horarios.keys())
+    horas_valores = list(horarios.values())
+
+    # BAIRROS
+    bairros_labels = [b[0] for b in ranking_ordenado]
+    bairros_valores = [b[1]['quantidade'] for b in ranking_ordenado]
     conn.close()
 
     # Enviar pro HTML
@@ -84,25 +92,54 @@ def index():
         quantidade=quantidade,
         ticket_medio=ticket_medio,
         horarios=horarios,
-        ranking_ordenado=ranking_ordenado
+        ranking_ordenado=ranking_ordenado,
+        horas_labels=horas_labels,
+        horas_valores=horas_valores,
+        bairros_labels=bairros_labels,
+        bairros_valores=bairros_valores
     )
 
 @app.route('/metricas')
 def metricas():
     conn = get_db_connection()
 
+    periodo = request.args.get('periodo', 'hoje')
+
+    hoje = datetime.today()
+
+    if periodo == '7dias':
+        data_inicio = (hoje - timedelta(days=7)).date()
+    elif periodo == '30dias':
+        data_inicio = (hoje - timedelta(days=30)).date()
+    else:
+        data_inicio = hoje.date()
+
+    # FILTRO NO BANCO
     deliveries = conn.execute('''
-        SELECT d.valor_produto, b.taxa
+        SELECT d.valor_produto, b.taxa, d.data
         FROM deliveries d
         JOIN bairros b ON d.bairro_id = b.id
-    ''').fetchall()
+        WHERE d.data >= ?
+    ''', (data_inicio,)).fetchall()
 
     total_produtos = sum([d['valor_produto'] for d in deliveries])
     total_taxas = sum([d['taxa'] for d in deliveries])
     total_geral = total_produtos + total_taxas
 
     quantidade = len(deliveries)
-    ticket_medio = total_produtos / quantidade if quantidade > 0 else 0
+    ticket_medio = total_geral / quantidade if quantidade > 0 else 0
+
+    # GRÁFICO
+    dados_dia = conn.execute('''
+        SELECT data, COUNT(*) as total
+        FROM deliveries
+        WHERE data >= ?
+        GROUP BY data
+        ORDER BY data
+    ''', (data_inicio,)).fetchall()
+
+    labels_dia = [d["data"] for d in dados_dia]
+    valores_dia = [d["total"] for d in dados_dia]
 
     conn.close()
 
@@ -111,7 +148,10 @@ def metricas():
         total_produtos=total_produtos,
         total_taxas=total_taxas,
         total_geral=total_geral,
-        ticket_medio=ticket_medio
+        ticket_medio=ticket_medio,
+        labels_dia=labels_dia,
+        valores_dia=valores_dia,
+        periodo=periodo
     )
 
 @app.route('/add', methods=['POST'])
@@ -130,6 +170,31 @@ def add_delivery():
     conn.close()
 
     return redirect('/')
+
+@app.route('/historico', methods=['GET', 'POST'])
+def historico():
+    conn = get_db_connection()
+
+    data_filtro = None
+    deliveries = []
+
+    if request.method == 'POST':
+        data_filtro = request.form['data']
+
+        deliveries = conn.execute('''
+            SELECT d.*, b.nome as bairro, b.taxa
+            FROM deliveries d
+            JOIN bairros b ON d.bairro_id = b.id
+            WHERE d.data = ?
+        ''', (data_filtro,)).fetchall()
+
+    conn.close()
+
+    return render_template(
+        'historico.html',
+        deliveries=deliveries,
+        data_filtro=data_filtro
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
