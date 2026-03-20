@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>📊 Dashboard</h1>
+
+<!-- FORM -->
+<div class="card">
+    <h2>Registrar Entrega</h2>
+    <form action="/add" method="POST">
+        <input type="number" step="0.01" name="valor" placeholder="Valor do Pedido" required>
+
+        <select name="bairro_id" required>
+            <option value="">Selecione o bairro</option>
+            {% for b in bairros %}
+                <option value="{{ b['id'] }}">
+                    {{ b['nome'] }} (R$ {{ b['taxa'] }})
+                </option>
+            {% endfor %}
+        </select>
+
+        <input type="date" name="data" required>
+        <input type="time" name="hora" required>
+
+        <button type="submit">Adicionar</button>
+    </form>
+</div>
+
+<!-- HORÁRIOS -->
+<div class="card">
+    <h2>📅 Entregas por Horário</h2>
+    <ul>
+        {% for hora, qtd in horarios.items() %}
+            <li>{{ hora }}h → {{ qtd }} entregas</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- RANKING -->
+<div class="card">
+    <h2>🏆 Ranking de Bairros</h2>
+    <ol>
+        {% for bairro, dados in ranking_ordenado %}
+            <li>
+                <strong>{{ bairro }}</strong><br>
+                📦 {{ dados.quantidade }} entregas<br>
+                💰 Produtos: R$ {{ dados.total_produto }}<br>
+                🚚 Total: R$ {{ dados.total_geral }}
+            </li>
+        {% endfor %}
+    </ol>
+</div>
+
+<!-- LISTA -->
+<div class="card">
+    <h2>📦 Entregas de Hoje</h2>
+    <ul>
+        {% for d in deliveries %}
+            <li>
+                R$ {{ d['valor_produto'] }} - {{ d['bairro'] }} - {{ d['hora'] }}
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}

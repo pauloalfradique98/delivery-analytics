@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>📊 Métricas Gerais</h1>
+
+<div class="card">
+    <p>💰 Produtos: R$ {{ total_produtos }}</p>
+    <p>🚚 Taxas: R$ {{ total_taxas }}</p>
+    <p>🧾 Total: R$ {{ total_geral }}</p>
+    <p>📊 Ticket Médio: R$ {{ "%.2f"|format(ticket_medio) }}</p>
+</div>
+
+{% endblock %}
