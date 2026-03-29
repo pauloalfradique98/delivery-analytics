@@ -34,4 +34,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const formAdd = document.getElementById("form-add");
+
+    if (formAdd) {
+        formAdd.addEventListener("submit", function(e) {
+            const btn = this.querySelector("button[type='submit']");
+            btn.disabled = true;
+        });
+    }
+
 });

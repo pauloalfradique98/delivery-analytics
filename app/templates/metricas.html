@@ -4,7 +4,7 @@
 
 <h1>📊 Métricas Gerais</h1>
 
-<form method="GET" class="card">
+<form method="GET" class="card filtro">
     <label>Filtrar período:</label>
 
     <select name="periodo">
@@ -13,29 +13,50 @@
         <option value="30dias" {% if periodo == '30dias' %}selected{% endif %}>Últimos 30 dias</option>
     </select>
 
+    <div style="margin-top:10px;">
+        <label>Período personalizado:</label><br>
+
+        <input type="date" name="data_inicio" value="{{ request.args.get('data_inicio', '') }}">
+        <input type="date" name="data_fim" value="{{ request.args.get('data_fim', '') }}">
+    </div>
+    
     <button type="submit">Filtrar</button>
 </form>
+
+<div class="card">
+    <h2>🧠 Insights Automáticos</h2>
+
+    {% if insights %}
+        <ul>
+            {% for insight in insights %}
+                <li>{{ insight }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Sem dados suficientes ainda.</p>
+    {% endif %}
+</div>
 
 <div class="grid">
 
     <div class="card kpi">
         <h3>💰 Produtos</h3>
-        <p>R$ {{ total_produtos }}</p>
+        <p>R$ {{ "%.2f"|format(total_produtos)|replace('.', ',') }}</p>
     </div>
 
     <div class="card kpi">
         <h3>🚚 Taxas</h3>
-        <p>R$ {{ total_taxas }}</p>
+        <p>R$ {{ "%.2f"|format(total_taxas)|replace('.', ',') }}</p>
     </div>
 
     <div class="card kpi">
         <h3>🧾 Total</h3>
-        <p>R$ {{ total_geral }}</p>
+        <p>R$ {{ "%.2f"|format(total_geral)|replace('.', ',') }}</p>
     </div>
 
     <div class="card kpi">
         <h3>📊 Ticket Médio</h3>
-        <p>R$ {{ "%.2f"|format(ticket_medio) }}</p>
+        <p>R$ {{ "%.2f"|format(ticket_medio)|replace('.', ',') }}</p>
     </div>
 
 </div>

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>📅 Histórico de Entregas</h1>
+
+<div class="card">
+    <form method="GET" class="card">
+
+    <label>Data específica:</label>
+    <input type="date" name="data" value="{{ filtros.get('data', '') }}">
+
+    <label>Período:</label>
+    <select name="periodo">
+        <option value="">--</option>
+        <option value="7dias">Últimos 7 dias</option>
+        <option value="30dias">Últimos 30 dias</option>
+    </select>
+
+    <label>Intervalo personalizado:</label>
+    <input type="date" name="data_inicio">
+    <input type="date" name="data_fim">
+
+    <label>Bairro:</label>
+    <select name="bairro">
+        <option value="">Todos</option>
+        {% for b in bairros %}
+            <option value="{{ b.id }}">{{ b.nome }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Filtrar</button>
+</form>
+</div>
+
+<div class="card">
+
+    {% if deliveries %}
+
+    <table class="table-modern">
+        <tr>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Produto</th>
+            <th>Taxa</th>
+            <th>Total</th>
+            <th>Bairro</th>
+            <th>Ações</th>
+        </tr>
+
+        {% for d in deliveries %}
+        <tr>
+            <td>{{ d['data'] }}</td>
+            <td>{{ d['hora'] }}</td>
+            <td>R$ {{ "%.2f"|format(d['valor_produto'])|replace('.', ',') }}</td>
+            <td>R$ {{ "%.2f"|format(d['taxa'])|replace('.', ',') }}</td>
+            <td>R$ {{ "%.2f"|format(d['valor_produto'] + d['taxa'])|replace('.', ',') }}</td>
+            <td>{{ d['bairro'] }}</td>
+            <td class="actions-cell">
+                <a href="{{ url_for('historico.edit_delivery_route', id=d['id']) }}" class="btn-action btn-edit">
+                    ✏️ Editar
+                </a>
+
+                <form action="{{ url_for('historico.delete_delivery_route', id=d['id']) }}" method="POST" style="margin:0;">
+                    <button type="submit" class="btn-action btn-delete" onclick="return confirm('Deseja realmente excluir?')">
+                        🗑️ Excluir
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </table>
+
+    {% else %}
+        <p>Nenhuma entrega encontrada.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>✏️ Editar Entrega</h1>
+
+<form method="POST" action="{{ url_for('historico.edit_delivery_route', id=delivery['id']) }}" class="card">
+
+    <input type="number" step="0.01" name="valor"
+           value="{{ delivery['valor_produto'] }}" required>
+
+    <select name="bairro_id">
+        {% for b in bairros %}
+            <option value="{{ b['id'] }}"
+                {% if b['id'] == delivery['bairro_id'] %}selected{% endif %}>
+                {{ b['nome'] }} (R$ {{ b['taxa'] }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <input type="date" name="data" value="{{ delivery['data'] }}" required>
+    <input type="time" name="hora" value="{{ delivery['hora'] }}" required>
+
+    <button type="submit">Salvar</button>
+
+</form>
+
+{% endblock %}

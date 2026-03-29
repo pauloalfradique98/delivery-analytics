@@ -1,0 +1,23 @@
+# Ambiente virtual
+venv/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Banco de dados
+*.db
+
+# Arquivos de ambiente (SENHAS)
+.env
+
+# VSCode
+.vscode/
+
+# Sistema
+.DS_Store
+
+# Logs
+*.log
